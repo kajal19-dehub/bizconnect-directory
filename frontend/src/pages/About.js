@@ -8,29 +8,24 @@ import {
 const About = () => {
   const teamMembers = [
     {
-      name: 'John Smith',
+      name: 'Kajal ',
       role: 'CEO & Founder',
-      image: '/team1.jpg',
+      image: '/img.jpg',
       bio: '10+ years in business development'
     },
     {
-      name: 'Sarah Johnson',
+      name: 'Guru Sharan',
       role: 'Head of Operations',
-      image: '/team2.jpg',
+      image: '/img2.jpg',
       bio: 'Expert in customer relations'
     },
     {
-      name: 'Michael Chen',
+      name: 'Suman sumanta',
       role: 'CTO',
-      image: '/team3.jpg',
+      image: '/img2.jpg',
       bio: 'Technology innovation leader'
     },
-    {
-      name: 'Emily Davis',
-      role: 'Marketing Director',
-      image: '/team4.jpg',
-      bio: 'Digital marketing specialist'
-    }
+  
   ];
 
   const values = [
@@ -205,7 +200,11 @@ const About = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {teamMembers.map((member, index) => (
               <div key={index} className="bg-white rounded-xl shadow-lg overflow-hidden">
-                <div className="h-48 bg-gradient-to-r from-blue-400 to-purple-400"></div>
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  className="w-full h-56 object-cover"
+                />
                 <div className="p-6 text-center">
                   <h3 className="text-xl font-bold mb-1">{member.name}</h3>
                   <p className="text-blue-600 font-medium mb-3">{member.role}</p>

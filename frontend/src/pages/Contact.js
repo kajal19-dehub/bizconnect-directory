@@ -63,7 +63,7 @@ const Contact = () => {
     {
       icon: <MapPin size={24} />,
       title: 'Visit Us',
-      details: ['Jalandhar', 'Punjab pb 14001', 'India'],
+      details: ['Jalandhar', 'Punjab, India'],
       color: 'text-purple-600',
       bg: 'bg-purple-50'
     },
@@ -338,7 +338,7 @@ const Contact = () => {
                   <div className="text-center">
                     <MapPin size={48} className="mx-auto text-gray-400 mb-4" />
                     <p className="text-gray-600">Interactive Map</p>
-                    <p className="text-sm text-gray-500">123 Business Street, New York, PB 144001</p>
+                    <p className="text-sm text-gray-500">Jalandhar Cantt, Jalandhar, PB 144001</p>
                   </div>
                 </div>
               </div>
@@ -352,8 +352,8 @@ const Contact = () => {
                   <MapPin className="text-gray-400 mt-1 mr-3" size={20} />
                   <div>
                     <p className="font-medium">Main Office</p>
-                    <p className="text-gray-600">123 Business Street</p>
-                    <p className="text-gray-600">New York, NY 10001</p>
+                    <p className="text-gray-600">Jalandhar, Punjab</p>
+                    <p className="text-gray-600">India, NY 144001</p>
                   </div>
                 </div>
                 
