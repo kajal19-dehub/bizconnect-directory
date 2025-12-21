@@ -6,6 +6,7 @@ import {
   Upload, X
 } from 'lucide-react';
 import api from '../../utils/api';
+import { businessCategories } from '../../data/categories';
 
 const CreateBusiness = () => {
   const navigate = useNavigate();
@@ -167,52 +168,162 @@ const CreateBusiness = () => {
   const handlePrevStep = () => {
     setCurrentStep(prev => prev - 1);
   };
-
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  setLoading(true);
+  
+  try {
+    // 1. First, test if the form has data
+    console.log("Form data to send:", formData);
     
-    if (!validateStep(currentStep)) return;
-    
-    setLoading(true);
-    
-    try {
-      const submitData = new FormData();
-      
-      // Append form data
-      Object.entries(formData).forEach(([key, value]) => {
-        if (typeof value === 'object' && value !== null) {
-          submitData.append(key, JSON.stringify(value));
-        } else {
-          submitData.append(key, value);
-        }
-      });
-      
-      // Append images
-      images.forEach((image, index) => {
-        submitData.append('images', image.file);
-      });
-      
-      // Append logo
-      if (logo) {
-        submitData.append('logo', logo.file);
+    // 2. Create a SIMPLE object with only essential fields
+    const simpleData = {
+      businessName: formData.businessName || "Test Business",
+      description: formData.description || "Test Description",
+      category: formData.category || "Service",
+      email: formData.email || "test@example.com", 
+      phone: formData.phone || "1234567890",
+      address: {
+        street: formData.address.street || "123 Test St",
+        city: formData.address.city || "Test City",
+        state: formData.address.state || "TS",
+        zipCode: formData.address.zipCode || "12345"
       }
+    };
+    
+    console.log("Sending:", simpleData);
+    
+    // 3. Use fetch instead of axios - SIMPLE
+    const token = localStorage.getItem('token') || "test-token";
+    
+    const response = await fetch('http://localhost:5000/api/businesses', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(simpleData)
+    });
+    
+    // 4. Get the response text first to see what's happening
+    const responseText = await response.text();
+    console.log("Raw response:", responseText);
+    
+    // 5. Try to parse as JSON
+    let result;
+    try {
+      result = JSON.parse(responseText);
+    } catch {
+      result = { message: responseText };
+    }
+    
+    // 6. Check if successful
+    if (response.ok) {
+      alert("✅ Business created successfully!");
+      navigate('/businesses');
+    } else {
+      console.error("Backend error:", result);
+      alert(`❌ Error: ${result.message || result.error || 'Unknown error'}`);
+    }
+    
+  } catch (error) {
+    console.error("Network error:", error);
+    alert("Network error: " + error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+const testBackendExpectations = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    
+    // Test 1: Send as JSON (no FormData)
+    const jsonData = {
+      businessName: 'Test JSON Business',
+      description: 'Test description',
+      category: 'Service',
+      email: 'test@example.com',
+      phone: '1234567890',
+      address: {
+        street: '123 Test St',
+        city: 'Test City',
+        state: 'TS',
+        zipCode: '12345'
+      }
+    };
+    
+    console.log('🧪 Testing JSON POST...');
+    const response1 = await api.post('/businesses', jsonData, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    console.log('✅ JSON test successful:', response1.data);
+    
+  } catch (error) {
+    console.error('❌ JSON test failed:', error.response?.data || error.message);
+  }
+};
+    // Debug function to test API
+  const testBusinessCreation = async () => {
+    try {
+      console.log('🧪 Testing business creation...');
       
-      const response = await api.post('/businesses', submitData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      // Test with mock data
+      const mockBusiness = {
+        businessName: 'Test Business ' + Date.now(),
+        description: 'This is a test business',
+        category: 'Service',
+        email: 'test@example.com',
+        phone: '+1 (555) 123-4567',
+        address: {
+          street: '123 Test St',
+          city: 'Test City',
+          state: 'TS',
+          zipCode: '12345',
+          country: 'USA'
+        },
+        services: [{ name: 'Test Service', description: 'Test description', price: '50' }],
+        hours: formData.hours
+      };
       
-      navigate(`/business/dashboard`);
+      const response = await api.post('/businesses', mockBusiness);
+      console.log('✅ Test business created:', response.data);
+      alert('Test business created successfully!');
+      
+      // Refresh business list
+      navigate('/businesses');
       
     } catch (error) {
-      console.error('Error creating business:', error);
-      alert('Failed to create business listing. Please try again.');
-    } finally {
-      setLoading(false);
+      console.error('❌ Test failed:', error);
+      alert(`Test failed: ${error.message}`);
     }
+    const testSimpleConnection = async () => {
+  console.log("Testing connection...");
+  
+  const testData = {
+    test: "Hello",
+    businessName: "My Business"
   };
-
+  
+  try {
+    const response = await fetch('http://localhost:5000/api/test/create-business', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(testData)
+    });
+    
+    const result = await response.json();
+    console.log("✅ Test successful:", result);
+    alert("Connection works! Backend received: " + JSON.stringify(result.received));
+  } catch (error) {
+    console.error("❌ Test failed:", error);
+    alert("Test failed: " + error.message);
+  }
+};
+  };
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-4xl">
@@ -300,26 +411,29 @@ const CreateBusiness = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Category *
-                    </label>
-                    <select
-                      name="category"
-                      value={formData.category}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                        errors.category ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                    >
-                      <option value="">Select a category</option>
-                      {categories.map(cat => (
-                        <option key={cat} value={cat.toLowerCase()}>{cat}</option>
-                      ))}
-                    </select>
-                    {errors.category && (
+                  <div className="mb-6">
+             <label className="block text-sm font-medium text-gray-700 mb-2">
+               Category *
+               </label>
+            <select
+               name="category"
+              value={formData.category}
+               onChange={handleChange}
+               className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+               errors.category ? 'border-red-500' : 'border-gray-300'
+               }`}
+             required
+                 >
+    <option value="">Select a category</option>
+    {businessCategories.map(cat => (
+      <option key={cat.id} value={cat.name}>
+                      {cat.icon} {cat.name}
+                       </option>
+                       ))}
+                      </select>
+                      {errors.category && (
                       <p className="mt-1 text-sm text-red-600">{errors.category}</p>
-                    )}
+                      )}
                   </div>
 
                   <div>
@@ -728,6 +842,7 @@ const CreateBusiness = () => {
                             }}
                             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           />
+  
                           <span>to</span>
                           <input
                             type="time"

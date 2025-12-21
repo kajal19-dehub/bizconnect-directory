@@ -11,7 +11,7 @@ const About = () => {
       name: 'Kajal ',
       role: 'CEO & Founder',
       image: '/img.jpg',
-      bio: '10+ years in business development'
+      bio: '2+ years in business development'
     },
     {
       name: 'Guru Sharan',
@@ -62,8 +62,19 @@ const About = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="container mx-auto px-4 py-24">
+      <div 
+        className="text-white relative"
+        style={{
+          backgroundImage: 'url(/bg3.avif)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        
+        <div className="container mx-auto px-4 py-24 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-5xl font-bold mb-6">About BizConnect</h1>
             <p className="text-xl mb-8">
@@ -103,7 +114,7 @@ const About = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mb-16">
             <div>
               <img
-                src="/about-story.jpg"
+                src="/img4.jpg"
                 alt="Our story"
                 className="rounded-2xl shadow-lg"
               />
@@ -239,8 +250,19 @@ const About = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
+      <div 
+        className="text-white py-16 relative"
+        style={{
+          backgroundImage: 'url(/bg4.avif)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        
+        <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="text-3xl font-bold mb-6">Join Our Community</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
             Whether you're looking to discover great businesses or grow your own, 

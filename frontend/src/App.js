@@ -2,8 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import store from './redux/store';
-import { ThemeProvider } from './contexts/ThemeContext';
-import ThemeSettings from './pages/settings/ThemeSettings';
+
+import OAuthCallback from './pages/OAuthCallback';
 
 // Layout Components
 import Navbar from './components/layout/Navbar';
@@ -30,6 +30,7 @@ import BusinessDashboard from './pages/business/Dashboard';
 import CreateBusiness from './pages/business/CreateBusiness';
 import EditBusiness from './pages/business/EditBusiness';
 import BusinessAnalytics from './pages/business/Analytics';
+import Categories from './pages/Categories';
 
 // Admin Page
 import AdminDashboard from './pages/admin/Dashboard';
@@ -37,15 +38,11 @@ import AdminDashboard from './pages/admin/Dashboard';
 // Private Route Component
 import PrivateRoute from './components/routing/PrivateRoute';
 
-// Remove Auth0 Provider for now to simplify
-// import { Auth0Provider } from '@auth0/auth0-react';
-
 function App() {
   return (
     <Provider store={store}>
-      <ThemeProvider>
       <Router>
-        <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+        <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900">
           <Navbar />
           <Alert />
           <main className="flex-grow">
@@ -53,11 +50,15 @@ function App() {
               {/* Public Routes */}
               <Route path="/" element={<Home />} />
               <Route path="/businesses" element={<BusinessList />} />
-              <Route path="/business/:id" element={<BusinessDetail />} />
+               <Route path="/businesses/:id" element={<BusinessDetail />} />
+              <Route path="/businesses/:id/edit" element={<EditBusiness />} />
+              <Route path="/saved-businesses" element={<SavedBusinesses />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/oauth/callback" element={<OAuthCallback />} />
 
               {/* User Routes */}
               <Route path="/dashboard" element={
@@ -91,15 +92,17 @@ function App() {
               <Route path="/admin/dashboard" element={
                 <PrivateRoute role="admin"><AdminDashboard /></PrivateRoute>
               } />
-              <Route path="/settings/theme" element={
-                <PrivateRoute><ThemeSettings /></PrivateRoute>
-              } />
+              <Route path="/" element={
+            <div className="p-8">
+              <h1 className="text-3xl font-bold">Home</h1>
+              <a href="/saved-businesses" className="text-blue-600">Go to Saved Businesses</a>
+            </div>
+          } />
             </Routes>
           </main>
           <Footer />
         </div>
       </Router>
-      </ThemeProvider>
     </Provider>
   );
 }

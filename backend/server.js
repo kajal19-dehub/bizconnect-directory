@@ -1,18 +1,40 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv');
-
+const session = require('express-session'); 
+require('./config/passport'); 
+const passport = require('passport');// Add this line
+const authRoutes = require('./routes/authRoutes');
+const businessRoutes = require('./routes/businessRoutes');
+const testRoutes = require('./routes/testRoutes');
 // Load environment variables
-dotenv.config();
+
 
 const app = express();
 
 // Middleware
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+}));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(session({
+  secret: process.env.JWT_SECRET || 'your-secret-key-change-this',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    maxAge: 1000 * 60 * 60 * 24 // 1 day
+  }
+}));
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
 // Database connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/bizconnect', {
   useNewUrlParser: true,
@@ -40,7 +62,8 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/businesses', require('./routes/business'));
 app.use('/api/reviews', require('./routes/review'));
 app.use('/api/users', require('./routes/user'));
-
+app.use('/api/auth', authRoutes);
+app.use('/api/test', testRoutes);
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({ 

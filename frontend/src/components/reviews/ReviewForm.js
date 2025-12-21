@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Star, Camera, X } from 'lucide-react';
 import api from '../../utils/api';
 
@@ -19,9 +19,29 @@ const ReviewForm = ({ businessId, onReviewSubmitted }) => {
   };
 
   const removeImage = (index) => {
+    // Get the image to revoke its URL
+    const imageToRemove = images[index];
+    
+    // Revoke the object URL to prevent memory leaks
+    if (imageToRemove.preview && imageToRemove.preview.startsWith('blob:')) {
+      URL.revokeObjectURL(imageToRemove.preview);
+    }
+    
+    // Remove the image from state
     const newImages = images.filter((_, i) => i !== index);
     setImages(newImages);
   };
+
+  // Clean up all blob URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      images.forEach((image) => {
+        if (image.preview && image.preview.startsWith('blob:')) {
+          URL.revokeObjectURL(image.preview);
+        }
+      });
+    };
+  }, [images]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,6 +74,13 @@ const ReviewForm = ({ businessId, onReviewSubmitted }) => {
       // Reset form
       setRating(0);
       setComment('');
+      
+      // Clean up all image preview URLs before resetting
+      images.forEach((image) => {
+        if (image.preview && image.preview.startsWith('blob:')) {
+          URL.revokeObjectURL(image.preview);
+        }
+      });
       setImages([]);
       
     } catch (error) {

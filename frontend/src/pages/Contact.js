@@ -4,6 +4,7 @@ import {
   MessageSquare, CheckCircle, Facebook,
   Twitter, Instagram, Linkedin
 } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -27,11 +28,28 @@ const Contact = () => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Form submitted:', formData);
+    try {
+      // Send email using EmailJS
+      const templateParams = {
+        to_email: 'netred@gmail.com', // Your email address
+        from_name: formData.name,
+        from_email: formData.email,
+        subject: `[${formData.category}] ${formData.subject || 'Contact Form Submission'}`,
+        message: formData.message,
+        category: formData.category
+      };
+
+      // You need to get these from your EmailJS account
+      const serviceId = 'YOUR_SERVICE_ID'; // Replace with your service ID
+      const templateId = 'YOUR_TEMPLATE_ID'; // Replace with your template ID
+      const userId = 'YOUR_USER_ID'; // Replace with your user ID/public key
+
+      await emailjs.send(serviceId, templateId, templateParams, userId);
+      
       setLoading(false);
       setSubmitted(true);
+      
+      // Reset form
       setFormData({
         name: '',
         email: '',
@@ -42,7 +60,12 @@ const Contact = () => {
       
       // Reset success message after 5 seconds
       setTimeout(() => setSubmitted(false), 5000);
-    }, 1500);
+      
+    } catch (error) {
+      console.error('Error sending email:', error);
+      setLoading(false);
+      // You might want to add error state here
+    }
   };
 
   const contactInfo = [
@@ -98,8 +121,19 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="container mx-auto px-4 py-20">
+      <div 
+        className="text-white relative"
+        style={{
+          backgroundImage: 'url(/bg3.avif)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        
+        <div className="container mx-auto px-4 py-20 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Get in Touch</h1>
             <p className="text-xl mb-8">
@@ -141,7 +175,9 @@ const Contact = () => {
                   <CheckCircle className="text-green-600 mr-3" size={20} />
                   <div>
                     <p className="font-medium text-green-800">Message sent successfully!</p>
-                    <p className="text-green-700 text-sm">We'll get back to you within 24 hours.</p>
+                    <p className="text-green-700 text-sm">
+                      We've received your message and will respond to netred@gmail.com within 24 hours.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -182,7 +218,21 @@ const Contact = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Subject *
+                  Subject
+                </label>
+                <input
+                  type="text"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Brief description of your inquiry"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Inquiry Type *
                 </label>
                 <select
                   name="category"
@@ -287,7 +337,7 @@ const Contact = () => {
                 </a>
                 
                 <a
-                  href="https://instagram.com"
+                  href="https://www.instagram.com/kajal.19__/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-12 h-12 bg-pink-50 text-pink-600 rounded-lg flex items-center justify-center hover:bg-pink-100 transition"

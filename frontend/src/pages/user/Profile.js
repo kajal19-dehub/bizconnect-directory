@@ -616,7 +616,7 @@ const Profile = () => {
                         <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                           <div>
                             <p className="font-medium">Chrome on Windows</p>
-                            <p className="text-sm text-gray-600">Current session • New York, USA</p>
+                            <p className="text-sm text-gray-600">Current session • jalandhar, Punjab</p>
                           </div>
                           <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
                             Current
@@ -625,8 +625,8 @@ const Profile = () => {
                         
                         <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                           <div>
-                            <p className="font-medium">Safari on iPhone</p>
-                            <p className="text-sm text-gray-600">Last active: 2 hours ago • Los Angeles, USA</p>
+                            <p className="font-medium">android</p>
+                            <p className="text-sm text-gray-600">Last active: 2 hours ago • jalandhar, Punjab</p>
                           </div>
                           <button className="text-red-600 hover:text-red-700 text-sm font-medium">
                             Revoke

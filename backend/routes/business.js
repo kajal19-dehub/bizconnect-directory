@@ -140,7 +140,7 @@ router.post('/', [
 
   const businessData = req.body;
   businessData.id = Date.now().toString();
-  businessData.userId = req.user.id;
+  businessData.owner = req.user ? req.user.id : 'test-user-id-123';
   businessData.averageRating = 0;
   businessData.totalReviews = 0;
   businessData.createdAt = new Date();

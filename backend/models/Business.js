@@ -1,112 +1,90 @@
 const mongoose = require('mongoose');
 
-const businessSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  businessName: {
-    type: String,
-    required: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
-  category: {
-    type: String,
-    required: true,
-    enum: ['restaurant', 'retail', 'service', 'health', 'education', 'entertainment', 'other']
-  },
-  subcategory: [{
-    type: String
-  }],
-  email: {
-    type: String,
-    required: true
-  },
-  phone: {
-    type: String,
-    required: true
-  },
-  address: {
-    street: String,
-    city: String,
-    state: String,
-    zipCode: String,
-    country: String
-  },
-  location: {
-    type: {
-      type: String,
-      enum: ['Point'],
-      default: 'Point'
+const BusinessSchema = new mongoose.Schema({
+    businessName: {
+        type: String,
+        required: [true, 'Business name is required'],
+        trim: true
     },
-    coordinates: {
-      type: [Number], // [longitude, latitude]
-      default: [0, 0]
+    description: {
+        type: String,
+        required: [true, 'Description is required'],
+        trim: true
+    },
+    category: {
+        type: String,
+        required: [true, 'Category is required']
+    },
+    subcategory: [String],
+    email: {
+        type: String,
+        required: [true, 'Email is required'],
+        lowercase: true,
+        trim: true
+    },
+    phone: {
+        type: String,
+        required: [true, 'Phone number is required'],
+        trim: true
+    },
+    address: {
+        street: {
+            type: String,
+            required: [true, 'Street address is required']
+        },
+        city: {
+            type: String,
+            required: [true, 'City is required']
+        },
+        state: {
+            type: String,
+            required: [true, 'State is required']
+        },
+        zipCode: {
+            type: String,
+            required: [true, 'ZIP code is required']
+        },
+        country: {
+            type: String,
+            default: 'USA'
+        }
+    },
+    website: String,
+    socialMedia: {
+        facebook: String,
+        twitter: String,
+        instagram: String,
+        linkedin: String
+    },
+    services: [{
+        name: String,
+        description: String,
+        price: String
+    }],
+    hours: {
+        monday: { open: String, close: String },
+        tuesday: { open: String, close: String },
+        wednesday: { open: String, close: String },
+        thursday: { open: String, close: String },
+        friday: { open: String, close: String },
+        saturday: { open: String, close: String },
+        sunday: { open: String, close: String }
+    },
+    images: [String],
+    logo: String,
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
     }
-  },
-  website: {
-    type: String
-  },
-  socialMedia: {
-    facebook: String,
-    twitter: String,
-    instagram: String,
-    linkedin: String
-  },
-  services: [{
-    name: String,
-    description: String,
-    price: Number
-  }],
-  hours: {
-    monday: { open: String, close: String },
-    tuesday: { open: String, close: String },
-    wednesday: { open: String, close: String },
-    thursday: { open: String, close: String },
-    friday: { open: String, close: String },
-    saturday: { open: String, close: String },
-    sunday: { open: String, close: String }
-  },
-  images: [{
-    url: String,
-    public_id: String
-  }],
-  logo: {
-    url: String,
-    public_id: String
-  },
-  averageRating: {
-    type: Number,
-    default: 0,
-    min: 0,
-    max: 5
-  },
-  totalReviews: {
-    type: Number,
-    default: 0
-  },
-  isVerified: {
-    type: Boolean,
-    default: false
-  },
-  isFeatured: {
-    type: Boolean,
-    default: false
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
-  }
 });
 
-businessSchema.index({ location: '2dsphere' });
-
-module.exports = mongoose.model('Business', businessSchema);
+module.exports = mongoose.model('Business', BusinessSchema);

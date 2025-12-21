@@ -6,7 +6,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-900 dark:bg-gray-950 text-white transition-colors duration-300">
+    <footer className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
@@ -18,16 +18,16 @@ const Footer = () => {
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white transition">
                 <Facebook size={20} />
-                         </a>
+              </a>
               <a href="#" className="text-gray-400 hover:text-white transition">
-               <Twitter size={20} />
-                 </a>
-              <a href="https://www.instagram.com/in/kajal.19__/" className="text-gray-400 hover:text-white transition">
+                <Twitter size={20} />
+              </a>
+              <a href="https://www.instagram.com/kajal.19__/" className="text-gray-400 hover:text-white transition">
                 <Instagram size={20} />
-                  </a>
+              </a>
               <a href="https://www.linkedin.com/in/kajaldwivedi19/" className="text-gray-400 hover:text-white transition">
                 <Linkedin size={20} />
-               </a>
+              </a>
             </div>
           </div>
 
@@ -115,7 +115,7 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 dark:border-gray-700 mt-8 pt-8">
+        <div className="border-t border-gray-800 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
               &copy; {currentYear} BizConnect. All rights reserved.

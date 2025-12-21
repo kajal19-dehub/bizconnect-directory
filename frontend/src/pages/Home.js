@@ -1,20 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, MapPin, Star, TrendingUp } from 'lucide-react';
-import api from '../utils/api';
-import { useTheme } from '../contexts/ThemeContext';
+import { Search, MapPin, Star, TrendingUp, ChevronRight } from 'lucide-react';
+import { businessCategories } from '../data/categories';
+import api from '../utils/api'; 
 
 const Home = () => {
-   const { theme } = useTheme(); 
   const [featuredBusinesses, setFeaturedBusinesses] = useState([]);
-  const [categories, setCategories] = useState([
-    { name: 'Restaurants', icon: '🍽️', count: 245 },
-    { name: 'Retail', icon: '🛍️', count: 189 },
-    { name: 'Services', icon: '🔧', count: 312 },
-    { name: 'Healthcare', icon: '🏥', count: 156 },
-    { name: 'Education', icon: '📚', count: 98 },
-    { name: 'Entertainment', icon: '🎭', count: 76 }
-  ]);
   const [searchTerm, setSearchTerm] = useState('');
   const [location, setLocation] = useState('');
 
@@ -41,8 +32,19 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-800 text-white">
-        <div className="container mx-auto px-4 py-24">
+      <div 
+        className="text-white relative"
+        style={{
+          backgroundImage: 'url(/bg.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        
+        <div className="container mx-auto px-4 py-24 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-5xl font-bold mb-6">
               Discover the Best Local Businesses
@@ -52,13 +54,13 @@ const Home = () => {
             </p>
             
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="bg-white dark:bg-gray-800 rounded-lg p-2 flex flex-col md:flex-row gap-2">
+            <form onSubmit={handleSearch} className="bg-white rounded-lg p-2 flex flex-col md:flex-row gap-2">
               <div className="flex-1 flex items-center">
-                <Search className="text-gray-400 ml-3 dark:text-gray-500" />
+                <Search className="text-gray-400 ml-3" />
                 <input
                   type="text"
                   placeholder="What are you looking for?"
-                  className="flex-1 p-3 outline-none text-gray-800 dark:text-gray-100 dark:bg-gray-800"
+                  className="flex-1 p-3 outline-none text-gray-800"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -90,10 +92,10 @@ const Home = () => {
           Browse by Category
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-          {categories.map((category) => (
+          {businessCategories.slice(0, 6).map((category) => (
             <Link
-              key={category.name}
-              to={`/businesses?category=${category.name.toLowerCase()}`}
+              key={category.id}
+              to={`/businesses?category=${category.id}`}
               className="bg-white rounded-xl p-6 text-center shadow-lg hover:shadow-xl transition-shadow"
             >
               <div className="text-4xl mb-4">{category.icon}</div>
@@ -101,6 +103,15 @@ const Home = () => {
               <p className="text-gray-600">{category.count} listings</p>
             </Link>
           ))}
+        </div>
+        <div className="text-center mt-8">
+          <Link
+            to="/categories"
+            className="inline-flex items-center text-blue-600 font-semibold hover:text-blue-700"
+          >
+            View All Categories
+            <ChevronRight size={20} className="ml-1" />
+          </Link>
         </div>
       </div>
 
@@ -178,8 +189,19 @@ const Home = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-gradient-to-r from-green-500 to-teal-600 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
+      <div 
+        className="text-white py-16 relative"
+        style={{
+          backgroundImage: 'url(/bg2.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        
+        <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="text-3xl font-bold mb-6">Are You a Business Owner?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
             List your business for free, reach more customers, and grow your business with our platform

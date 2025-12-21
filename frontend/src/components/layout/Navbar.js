@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Search, User, Menu, X, Bell, Home, 
-  Building2, Star, Bookmark, LogOut 
+  Building2, Star, Bookmark, LogOut,
+  CheckCircle, AlertCircle, Info, MessageSquare,
+  ExternalLink
 } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../redux/slices/authSlice';
@@ -10,11 +12,79 @@ import { logout } from '../../redux/slices/authSlice';
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [isNotificationMenuOpen, setIsNotificationMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useSelector(state => state.auth);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchNotifications();
+    }
+  }, [isAuthenticated]);
+
+  const fetchNotifications = () => {
+    // Mock notifications data
+    const mockNotifications = [
+      {
+        id: 1,
+        type: 'success',
+        title: 'Welcome to BizConnect!',
+        message: 'Get started by exploring local businesses in your area.',
+        time: '2 hours ago',
+        read: false,
+        icon: <CheckCircle size={18} />,
+        link: '/'
+      },
+      {
+        id: 2,
+        type: 'info',
+        title: 'New Businesses Nearby',
+        message: '3 new businesses have been listed in your city this week.',
+        time: '1 day ago',
+        read: false,
+        icon: <Info size={18} />,
+        link: '/businesses'
+      },
+      {
+        id: 3,
+        type: 'alert',
+        title: 'Complete Your Profile',
+        message: 'Complete your profile to get personalized recommendations.',
+        time: '2 days ago',
+        read: true,
+        icon: <AlertCircle size={18} />,
+        link: '/profile'
+      },
+      {
+        id: 4,
+        type: 'message',
+        title: 'New Review Received',
+        message: 'Someone left a review on your saved business.',
+        time: '3 days ago',
+        read: true,
+        icon: <MessageSquare size={18} />,
+        link: '/my-reviews'
+      },
+      {
+        id: 5,
+        type: 'info',
+        title: 'New Feature Available',
+        message: 'You can now save businesses to collections.',
+        time: '4 days ago',
+        read: true,
+        icon: <Info size={18} />,
+        link: '/saved-businesses'
+      }
+    ];
+    
+    setNotifications(mockNotifications);
+    setUnreadCount(mockNotifications.filter(n => !n.read).length);
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -27,6 +97,60 @@ const Navbar = () => {
     dispatch(logout());
     navigate('/');
     setIsProfileMenuOpen(false);
+  };
+
+  const toggleNotificationMenu = () => {
+    setIsNotificationMenuOpen(!isNotificationMenuOpen);
+    if (!isNotificationMenuOpen) {
+      markAllAsRead();
+    }
+  };
+
+  const markAsRead = (id) => {
+    setNotifications(prev => 
+      prev.map(notification => 
+        notification.id === id ? { ...notification, read: true } : notification
+      )
+    );
+    setUnreadCount(prev => Math.max(0, prev - 1));
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(prev => 
+      prev.map(notification => ({ ...notification, read: true }))
+    );
+    setUnreadCount(0);
+  };
+
+  const deleteNotification = (id) => {
+    const notification = notifications.find(n => n.id === id);
+    setNotifications(prev => prev.filter(n => n.id !== id));
+    if (notification && !notification.read) {
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    }
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+    setUnreadCount(0);
+  };
+
+  const getNotificationColor = (type) => {
+    switch (type) {
+      case 'success': return 'bg-green-100 text-green-800 border-green-200';
+      case 'info': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'alert': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'message': return 'bg-purple-100 text-purple-800 border-purple-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const handleNotificationClick = (notification) => {
+    markAsRead(notification.id);
+    if (notification.link) {
+      navigate(notification.link);
+      setIsNotificationMenuOpen(false);
+    }
   };
 
   const navLinks = [
@@ -82,11 +206,144 @@ const Navbar = () => {
             </form>
            
             {isAuthenticated ? (
-              <div className="flex items-center space-x-4">
-                <button className="relative p-2 text-gray-600 hover:text-blue-600">
-                  <Bell size={22} />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
+              <div className="flex items-center space-x-3">
+                {/* Notification Bell */}
+                <div className="relative">
+                  <button
+                    onClick={toggleNotificationMenu}
+                    className="relative p-2 rounded-full hover:bg-gray-100 transition"
+                  >
+                    <Bell size={22} className="text-gray-600" />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Notifications Dropdown */}
+                  {isNotificationMenuOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setIsNotificationMenuOpen(false)}
+                      ></div>
+                      <div className="absolute right-0 mt-2 w-80 md:w-96 bg-white rounded-xl shadow-xl border border-gray-200 z-50">
+                        {/* Notifications Header */}
+                        <div className="p-4 border-b border-gray-200">
+                          <div className="flex justify-between items-center">
+                            <h3 className="font-bold text-gray-800">Notifications</h3>
+                            <div className="flex items-center space-x-2">
+                              {unreadCount > 0 && (
+                                <button
+                                  onClick={markAllAsRead}
+                                  className="text-sm text-blue-600 hover:text-blue-800"
+                                >
+                                  Mark all as read
+                                </button>
+                              )}
+                              {notifications.length > 0 && (
+                                <button
+                                  onClick={clearAllNotifications}
+                                  className="text-sm text-red-600 hover:text-red-800"
+                                >
+                                  Clear all
+                                </button>
+                              )}
+                              <button
+                                onClick={() => setIsNotificationMenuOpen(false)}
+                                className="p-1 hover:bg-gray-100 rounded"
+                              >
+                                <X size={18} className="text-gray-500" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Notifications List */}
+                        <div className="max-h-96 overflow-y-auto">
+                          {notifications.length > 0 ? (
+                            <div className="divide-y divide-gray-100">
+                              {notifications.map((notification) => (
+                                <div
+                                  key={notification.id}
+                                  className={`p-4 hover:bg-gray-50 transition cursor-pointer ${
+                                    !notification.read ? 'bg-blue-50' : ''
+                                  }`}
+                                  onClick={() => handleNotificationClick(notification)}
+                                >
+                                  <div className="flex justify-between items-start">
+                                    <div className="flex items-start">
+                                      <div className={`p-2 rounded-full mr-3 ${getNotificationColor(notification.type)}`}>
+                                        {notification.icon}
+                                      </div>
+                                      <div className="flex-1">
+                                        <div className="flex justify-between items-start">
+                                          <h4 className="font-semibold text-gray-800">{notification.title}</h4>
+                                          {!notification.read && (
+                                            <span className="ml-2 w-2 h-2 bg-blue-500 rounded-full"></span>
+                                          )}
+                                        </div>
+                                        <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+                                        <div className="flex justify-between items-center mt-3">
+                                          <span className="text-xs text-gray-500">{notification.time}</span>
+                                          <div className="flex space-x-2">
+                                            {!notification.read && (
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  markAsRead(notification.id);
+                                                }}
+                                                className="text-xs text-blue-600 hover:text-blue-800"
+                                              >
+                                                Mark as read
+                                              </button>
+                                            )}
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                deleteNotification(notification.id);
+                                              }}
+                                              className="text-xs text-red-600 hover:text-red-800"
+                                            >
+                                              Delete
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="p-8 text-center">
+                              <Bell size={48} className="mx-auto text-gray-300 mb-4" />
+                              <p className="text-gray-500">No notifications yet</p>
+                              <p className="text-sm text-gray-400 mt-2">
+                                We'll notify you when something important happens
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Notifications Footer */}
+                        {notifications.length > 0 && (
+                          <div className="p-4 border-t border-gray-200">
+                            <Link
+                              to="/notifications"
+                              className="flex items-center justify-center text-blue-600 hover:text-blue-800 font-medium"
+                              onClick={() => setIsNotificationMenuOpen(false)}
+                            >
+                              View All Notifications
+                              <ExternalLink size={16} className="ml-2" />
+                            </Link>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
                 
                 {/* User Menu */}
                 <div className="relative">
@@ -197,6 +454,50 @@ const Navbar = () => {
                   <span className="ml-3">{link.name}</span>
                 </Link>
               ))}
+
+              {/* Mobile Notifications (for logged in users) */}
+              {isAuthenticated && notifications.length > 0 && (
+                <div className="px-4 py-3 border-t border-gray-200">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-semibold text-gray-800">Notifications</h4>
+                    {unreadCount > 0 && (
+                      <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1">
+                        {unreadCount} new
+                      </span>
+                    )}
+                  </div>
+                  <div className="space-y-3 max-h-60 overflow-y-auto">
+                    {notifications.slice(0, 3).map((notification) => (
+                      <div
+                        key={notification.id}
+                        className={`p-3 rounded-lg border ${
+                          !notification.read ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'
+                        }`}
+                      >
+                        <div className="flex items-start">
+                          <div className={`p-2 rounded-full mr-2 ${getNotificationColor(notification.type)}`}>
+                            {notification.icon}
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">{notification.title}</p>
+                            <p className="text-xs text-gray-600 mt-1">{notification.message}</p>
+                            <p className="text-xs text-gray-500 mt-2">{notification.time}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {notifications.length > 3 && (
+                    <Link
+                      to="/notifications"
+                      className="block text-center mt-3 text-blue-600 text-sm font-medium"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      View all notifications →
+                    </Link>
+                  )}
+                </div>
+              )}
 
               {isAuthenticated ? (
                 <>
