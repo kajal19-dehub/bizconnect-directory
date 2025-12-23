@@ -3,8 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const session = require('express-session'); 
-require('./config/passport'); 
-const passport = require('passport');// Add this line
+const passport = require('passport');
+require('./config/passport'); // Add this line
 const authRoutes = require('./routes/authRoutes');
 const businessRoutes = require('./routes/businessRoutes');
 const testRoutes = require('./routes/testRoutes');
