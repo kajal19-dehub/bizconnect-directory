@@ -84,7 +84,7 @@ const BusinessSchema = new mongoose.Schema({
     updatedAt: {
         type: Date,
         default: Date.now
-    }
+    }   
 });
 
 module.exports = mongoose.model('Business', BusinessSchema);
