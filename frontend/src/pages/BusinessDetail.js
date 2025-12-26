@@ -72,7 +72,7 @@ const BusinessDetail = () => {
       averageRating: 4.8,
       totalReviews: 124,
       email: 'info@coffeecorner.com',
-      phone: '+1 (555) 123-4567',
+      phone: '+91 9876543210',
       website: 'https://coffeecorner.example.com',
       address: {
         street: '123 Main St',
